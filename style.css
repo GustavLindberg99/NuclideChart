@@ -1,0 +1,77 @@
+body{
+    font-family:arial;
+    font-size:10pt;
+}
+
+#container{
+    width:calc(100vw - 16px);
+    height:calc(100vh - 4em);
+    overflow:scroll;
+    user-select:none;
+}
+
+a[download]{
+    text-decoration:none;
+    color:black;
+    background-color:#ccc;
+    padding:2px;
+    border:solid #555 0.5px;
+    border-radius:2px;
+    line-height:100%;
+}
+
+a[download]:hover{
+    background-color:#eee;
+}
+
+a[download] > img{
+    width:1.5em;
+    height:1.5em;
+    vertical-align:middle;
+}
+
+#topbar{
+    display:flex;
+    margin-bottom:8px;
+}
+
+#topbar > *{
+    margin-right:4px;
+}
+
+@keyframes spin{
+    100%{
+        transform:rotate(360deg);
+    }
+}
+
+img[src$="loading.svg"]{
+    animation:spin 1s linear infinite;
+}
+
+#loading{
+    text-align:center;
+    font-size:1.5em;
+}
+
+#legend{
+    position:absolute;
+    right:35px;
+    bottom:35px;
+    background-color:white;
+    border:solid black 1px;
+    border-radius:3px;
+    padding:8px;
+}
+
+#legend h2, #legend p{
+    margin:0px;
+    font-size:1em;
+}
+
+#legend .box{
+    display:inline-block;
+    width:0.8em;
+    height:0.8em;
+    margin-right:2px;
+}

@@ -1,0 +1,60 @@
+text{
+    font-family:Arial;
+    text-anchor:middle;
+    fill:white;
+}
+tspan.isotope{
+    font-size:8pt;
+}
+tspan.element{
+    font-size:12pt;
+}
+text.details{
+    font-size:5pt;
+}
+line.magicNumber{
+    fill:none;
+    stroke:black;
+    stroke-opacity:0.5;
+    stroke-width:4;
+}
+.box.stable{
+    fill:#000;
+    background-color:#000;
+}
+.box.a{
+    fill:#dd0;
+    background-color:#dd0;
+}
+.box.bminus{
+    fill:#0af;
+    background-color:#0af;
+}
+.box.doublebminus{
+    fill:#05c;
+    background-color:#05c;
+}
+.box.n{
+    fill:#aaf;
+    background-color:#aaf;
+}
+.box.bplus{
+    fill:#f77;
+    background-color:#f77;
+}
+.box.doublebplus{
+    fill:#c55;
+    background-color:#c55;
+}
+.box.ec{
+    fill:#f3a;
+    background-color:#f3a;
+}
+.box.p{
+    fill:#f41;
+    background-color:#f41;
+}
+.box.sf{
+    fill:#0a0;
+    background-color:#0a0;
+}

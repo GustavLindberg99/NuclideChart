@@ -1,0 +1,44 @@
+<html>
+<head>
+    <title>Nuclide Chart</title>
+    <script type="text/javascript" src="https://mapcollector.eu5.org/scripts/javascriptextras.js"></script>
+    <script type="text/javascript" src="https://mapcollector.eu5.org/scripts/scroll.js"></script>
+    <script type="text/javascript" src="chart.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+    <link rel="stylesheet" type="text/css" href="chartstyle.css"/>
+</head>
+<body>
+    <div id="topbar">
+        <a id="downloadChart" disabled download>
+            <img class="inline" src="svg.svg" alt=""/>
+            Download Chart (SVG)
+        </a>
+        <a href="data.csv" download>
+            <img class="inline" src="csv.svg" alt=""/>
+            Download Data (CSV)
+        </a>
+        <button id="zoomOut" title="Zoom out">-</button>
+        <input type="range" id="zoomInput" min="0" max="100" value="100" title="Zoom"/>
+        <button id="zoomIn" title="Zoom in">+</button>
+        <button onclick="alert('Nuclide Chart\nCopyright \u00A9 2020 Gustav Lindberg\nSource code: https://github.com/GustavLindberg99/NuclideChart\n\nThe chart is licensed under the MIT license. The data is from https://www.nndc.bnl.gov/.\n\nIcons made by Smashicons and Icomoon from www.flaticon.com are licensed by CC 3.0 BY. Some of the icons have been modified.')">About this chart</button>
+    </div>
+    <div id="loading">
+        <img src="https://mapcollector.eu5.org/images/loading.svg" width="64" height="64" alt="Loading..."/>
+        <p>Loading...</p>
+    </div>
+    <div id="container" style="display:none" data-zoomable></div>
+    <div id="legend">
+        <h2>Decay Modes</h2>
+        <p><span class="box stable"></span> Stable</p>
+        <p><span class="box a"></span> &alpha;</p>
+        <p><span class="box bminus"></span> &beta;-</p>
+        <p><span class="box doublebminus"></span> Double &beta;-</p>
+        <p><span class="box n"></span> Neutron emission</p>
+        <p><span class="box bplus"></span> &beta;+ or electron capture</p>
+        <p><span class="box doublebplus"></span> Double &beta;+ or double electron capture</p>
+        <p><span class="box ec"></span> Electron capture only</p>
+        <p><span class="box p"></span> Proton emission</p>
+        <p><span class="box sf"></span> Spontaneous fission</p>
+    </div>
+</body>
+</html>
