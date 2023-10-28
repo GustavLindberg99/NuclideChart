@@ -80,6 +80,7 @@ class DecayMode{
         else{
             this.name = this.className;
         }
+        this.className = this.className.toLowerCase();
 
         if(dataArray.length == 1){
             if(hasMultipleDecayModes){
