@@ -9,9 +9,9 @@ let isDragging = false;
 
 class Nuclide{
     /**
-     * @type {string} A string representation of the nulcide, for example "1H".
+     * @type {string} A string representation of the nuclide, for example "1H".
      */
-    nulcide;
+    nuclide;
 
     /**
      * @type {number} The number of protons.
@@ -135,7 +135,7 @@ class DecayMode{
             this.name = dataArray[0].replace("b", "\u03b2");
         }
         else{
-            this.name = this.className;
+            this.name = this.className.replace("double", "2");
         }
         this.className = this.className.toLowerCase();
 
@@ -186,7 +186,7 @@ function createChart(data){
         };
 
         //Color the nuclide by decay mode
-        if(nuclide.secondaryDecayMode == null || nuclide.secondaryDecayMode.frequency < 5){
+        if(nuclide.secondaryDecayMode == null || (nuclide.secondaryDecayMode.frequency ?? NaN) < 5){
             const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
             rect.setAttribute("width", 50);
             rect.setAttribute("height", 50);
