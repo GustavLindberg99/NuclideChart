@@ -1,8 +1,7 @@
 <html>
 <head>
     <title>Nuclide Chart</title>
-    <script type="text/javascript" src="https://mapcollector.eu5.org/scripts/javascriptextras.js"></script>
-    <script type="text/javascript" src="https://mapcollector.eu5.org/scripts/scroll.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.2/dist/svg-pan-zoom.min.js"></script>
     <script type="text/javascript" src="chart.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css"/>
     <link rel="stylesheet" type="text/css" href="chartstyle.css"/>
@@ -17,13 +16,10 @@
             <img class="inline" src="csv.svg" alt=""/>
             Download Data (CSV)
         </a>
-        <button id="zoomOut" title="Zoom out">-</button>
-        <input type="range" id="zoomInput" min="0" max="100" value="100" title="Zoom"/>
-        <button id="zoomIn" title="Zoom in">+</button>
         <button onclick="alert('Nuclide Chart\nCopyright \u00A9 2020 Gustav Lindberg\nSource code: https://github.com/GustavLindberg99/NuclideChart\n\nThe chart is licensed under the MIT license. The data is from https://www.nndc.bnl.gov/.\n\nIcons made by Smashicons and Icomoon from www.flaticon.com are licensed by CC 3.0 BY. Some of the icons have been modified.')">About this chart</button>
     </div>
     <div id="loading">
-        <img src="https://mapcollector.eu5.org/images/loading.svg" width="64" height="64" alt="Loading..."/>
+        <img src="loading.svg" width="64" height="64" alt="Loading..."/>
         <p>Loading...</p>
     </div>
     <div id="container" style="display:none" data-zoomable></div>

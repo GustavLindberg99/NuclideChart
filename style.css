@@ -4,9 +4,6 @@ body{
 }
 
 #container{
-    width:calc(100vw - 16px);
-    height:calc(100vh - 4em);
-    overflow:scroll;
     user-select:none;
 }
 
@@ -56,8 +53,8 @@ img[src$="loading.svg"]{
 
 #legend{
     position:absolute;
-    right:35px;
-    bottom:35px;
+    left:35px;
+    top:45px;
     background-color:white;
     border:solid black 1px;
     border-radius:3px;
@@ -74,4 +71,9 @@ img[src$="loading.svg"]{
     width:0.8em;
     height:0.8em;
     margin-right:2px;
+}
+
+svg{
+    width:100%;
+    height:calc(100% - 4em);
 }

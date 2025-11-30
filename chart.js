@@ -1,23 +1,63 @@
 "use strict";
 
-const width = 9100;
-const height = 6100;
 const elements = Object.freeze(["n", "H", "He", "Li", "Be", "B", "C", "N", "O", "F", "Ne", "Na", "Mg", "Al", "Si", "P", "S", "Cl", "Ar", "K", "Ca", "Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Ga", "Ge", "As", "Se", "Br", "Kr", "Rb", "Sr", "Y", "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag", "Cd", "In", "Sn", "Sb", "Te", "I", "Xe", "Cs", "Ba", "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu", "Hf", "Ta", "W", "Re", "Os", "Ir", "Pt", "Au", "Hg", "Tl", "Pb", "Bi", "Po", "At", "Rn", "Fr", "Ra", "Ac", "Th", "Pa", "U", "Np", "Pu", "Am", "Cm", "Bk", "Cf", "Es", "Fm", "Md", "No", "Lr", "Rf", "Db", "Sg", "Bh", "Hs", "Mt", "Ds", "Rg", "Cn", "Nh", "Fl", "Mc", "Lv", "Ts", "Og"]);
 const names = Object.freeze(["Neutron", "Hydrogen", "Helium", "Lithium", "Beryllium", "Boron", "Carbon", "Nitrogen", "Oxygen", "Fluroine", "Neon", "Sodium", "Magnesium", "Aluminium", "Silicon", "Phosphorus", "Sulfur", "Chlorine", "Argon", "Potassium", "Calcium", "Scandium", "Titanium", "Vanadium", "Chromium", "Manganese", "Iron", "Cobalt", "Nickel", "Copper", "Zinc", "Gallium", "Germanium", "Arsenic", "Selenium", "Bromine", "Krypton", "Rubidium", "Strontium", "Yttrium", "Zirconium", "Niobium", "Molybdenum", "Technetium", "Ruthenium", "Rhodium", "Palladium", "Silver", "Cadmium", "Indium", "Tin", "Antimony", "Tellurium", "Iodine", "Xenon", "Caesium", "Barium", "Lanthanum", "Cerium", "Praseodymium", "Neodymium", "Promethium", "Samarium", "Europium", "Gadolinium", "Terbium", "Dysprosium", "Holmium", "Erbium", "Thulium", "Ytterbium", "Lutetium", "Hafnium", "Tantalum", "Tungsten", "Rhenium", "Osmium", "Iridium", "Platinum", "Gold", "Mercury", "Thallium", "Lead", "Bismuth", "Polonium", "Astatine", "Radon", "Francium", "Radium", "Actinium", "Thorium", "Protactinium", "Uranium", "Neptunium", "Plutonium", "Americium", "Curium", "Berkelium", "Californium", "Einsteinium", "Fermium", "Mendelevium", "Nobelium", "Lawrencium", "Rutherfordium", "Dubnium", "Seaborgium", "Bohrium", "Hassium", "Meitnerium", "Darmstadtium", "Roentgenium", "Copernicium", "Nihonium", "Flerovium", "Moscovium", "Livermorium", "Tennessine", "Oganesson"]);
 const placeholders = Object.freeze(["n", "u", "b", "t", "q", "p", "h", "s", "o", "e"]);
 const placeholderNames = Object.freeze(["nil", "un", "bi", "tri", "quad", "pent", "hex", "sept", "oct", "enn"]);
 
+let isDragging = false;
+
 class Nuclide{
+    /**
+     * @type {string} A string representation of the nulcide, for example "1H".
+     */
     nulcide;
+
+    /**
+     * @type {number} The number of protons.
+     */
     z;
+
+    /**
+     * @type {number} The number of neutrons.
+     */
     n;
+
+    /**
+     * @type {DecayMode} The decay mode.
+     */
     decayMode;
+
+    /**
+     * @type {DecayMode | null} The secondary decay mode.
+     */
     secondaryDecayMode;
+
+    /**
+     * @type {DecayMode | null} The tertiary decay mode.
+     */
     tertiaryDecayMode;
+
+    /**
+     * @type {string} The half life as a string including the unit, for example "614 s".
+     */
     halfLife;
+
+    /**
+     * @type {string} The angular momentum and parity, for example "1/2+".
+     */
     jp;
+
+    /**
+     * @type {number | null} The percentage of the element in nature that has this isotope. Null if the isotope isn't present in nature (even if the element is).
+     */
     abundance;
 
+    /**
+     * Constructor.
+     *
+     * @param {string} data A line from the CSV file.
+     */
     constructor(data){
         const dataArray = data.split(";");
         this.nuclide = dataArray[0];
@@ -63,10 +103,27 @@ class Nuclide{
 }
 
 class DecayMode{
+    /**
+     * @type {string} The name of the CSS class corresponding to this decay mode.
+     */
     className;
+
+    /**
+     * @type {string} The human-readable name of this decay mode, using unicode for alpha and beta.
+     */
     name;
+
+    /**
+     * @type {number | null} The frequency of this decay mode in percent. Null if the frequency is unknown.
+     */
     frequency;
 
+    /**
+     * Constructor.
+     *
+     * @param {string}  data                    The data from the CSV file, for example "b-: 98.1%".
+     * @param {boolean} hasMultipleDecayModes   Whether there are other decay modes for the same nuclide.
+     */
     constructor(data, hasMultipleDecayModes){
         const dataArray = data.split(":");
         this.className = dataArray[0].trim().replace("-", "minus").replace("+", "plus").replace("2", "double");
@@ -96,13 +153,20 @@ class DecayMode{
     }
 }
 
+/**
+ * Creates the nuclide chart.
+ *
+ * @param {string} data The complete contents of the CSV file.
+ *
+ * @returns {SVGSVGElement} The element containing the chart.
+ */
 function createChart(data){
+    const magicNumberWidth = 9100;
+    const magicNumberHeight = 6100;
+
     const nuclides = data.split(/[\r\n]+/);
 
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("width", width);
-    svg.setAttribute("height", height);
-    svg.setAttribute("viewBox", "0 0 " + width + " " + height);
 
     for(let nuclideData of nuclides.slice(1)){
         if(nuclideData == ""){
@@ -114,7 +178,12 @@ function createChart(data){
         const a = document.createElementNS("http://www.w3.org/2000/svg", "a");
         a.setAttribute("href", "https://www.nndc.bnl.gov/nudat3/" + (nuclide.decayMode.className == "stable" ? "getdataset.jsp?nucleus" : "decaysearchdirect.jsp?nuc") + "=" + nuclide.a + elements[nuclide.z]);
         a.setAttribute("target", "_blank");
-        a.setAttribute("transform", "translate(" + (nuclide.n + 0.1) * 51 + "," + (height - (nuclide.z + 1) * 51) + ")");
+        a.setAttribute("transform", "translate(" + (nuclide.n + 0.1) * 51 + "," + (magicNumberHeight - (nuclide.z + 1) * 51) + ")");
+        a.onclick = (event) => {
+            if(isDragging && event.cancelable){
+                event.preventDefault();
+            }
+        };
 
         //Color the nuclide by decay mode
         if(nuclide.secondaryDecayMode == null || nuclide.secondaryDecayMode.frequency < 5){
@@ -161,7 +230,7 @@ function createChart(data){
         isotope.setAttribute("class", "isotope");
         isotope.textContent = nuclide.a;
         elementAndIsotope.appendChild(isotope);
-        
+
         const element = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
         element.setAttribute("dy", 10);
         element.setAttribute("class", "element");
@@ -228,21 +297,21 @@ function createChart(data){
     //Magic numbers
     const protonMagicNumbers = Object.freeze([2, 8, 20, 28, 50, 82]);
     for(let magicNumber of protonMagicNumbers){
-        const y1 = height - (magicNumber + 1) * 51;
-        const y2 = height - (magicNumber) * 51;
+        const y1 = magicNumberHeight - (magicNumber + 1) * 51;
+        const y2 = magicNumberHeight - (magicNumber) * 51;
 
         const line1 = document.createElementNS("http://www.w3.org/2000/svg", "line");
         line1.setAttribute("class", "magicNumber");
         line1.setAttribute("x1", 0);
-        line1.setAttribute("x2", width);
+        line1.setAttribute("x2", magicNumberWidth);
         line1.setAttribute("y1", y1);
         line1.setAttribute("y2", y1);
         svg.appendChild(line1);
-        
+
         const line2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
         line2.setAttribute("class", "magicNumber");
         line2.setAttribute("x1", 0);
-        line2.setAttribute("x2", width);
+        line2.setAttribute("x2", magicNumberWidth);
         line2.setAttribute("y1", y2);
         line2.setAttribute("y2", y2);
         svg.appendChild(line2);
@@ -258,15 +327,15 @@ function createChart(data){
         line1.setAttribute("x1", x1);
         line1.setAttribute("x2", x1);
         line1.setAttribute("y1", 0);
-        line1.setAttribute("y2", height);
+        line1.setAttribute("y2", magicNumberHeight);
         svg.appendChild(line1);
-        
+
         const line2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
         line2.setAttribute("class", "magicNumber");
         line2.setAttribute("x1", x2);
         line2.setAttribute("x2", x2);
         line2.setAttribute("y1", 0);
-        line2.setAttribute("y2", height);
+        line2.setAttribute("y2", magicNumberHeight);
         svg.appendChild(line2);
     }
 
@@ -295,57 +364,25 @@ window.addEventListener("load", () => {
             downloadChart.href = "data:image/svg+xml;utf8," + encodeURIComponent(chart.outerHTML.replace("<svg ", "<svg xmlns=\"http://www.w3.org/2000/svg\" ").replace("><", "><style type=\"text/css\">" + css + "</style><"));
 
             //Set the scrolling
-            let oldScrollLeft = container.scrollLeft = localStorage.getItem("scrollLeft") ?? width * 0.5;
-            let oldScrollTop = container.scrollTop = localStorage.getItem("scrollTop") ?? height * 0.35;
-
-            //Change the cursor when dragging to scroll
-            chart.onmousedown = (event) => {
-                dragToScroll(event, container);
-                chart.style.cursor = "move";
-            };
-            chart.onmouseup = (event) => {
-                if(oldScrollLeft != container.scrollLeft || oldScrollTop != container.scrollTop){
-                    event.preventDefault();
-                    oldScrollLeft = container.scrollLeft;
-                    oldScrollTop = container.scrollTop;
-                }
-                else{
-                    chart.style.cursor = "";
-                }
-            };
-            window.addEventListener("click", (event) => {
-                chart.style.cursor = "";
+            svgPanZoom(chart, {
+                controlIconsEnabled: true,
+                minZoom: 1,
+                maxZoom: 150
             });
 
-            //When scrolling, store the new position so that the user can start again where he left off
-            container.onscroll = () => {
-                if(chart.getAttribute("width") == width && chart.getAttribute("height") == height){
-                    localStorage.setItem("scrollLeft", container.scrollLeft);
-                    localStorage.setItem("scrollTop", container.scrollTop);
-                }
-            };
+            //Don't click on links while panning
+            let clickX, clickY;
+            chart.addEventListener("mousedown", (event) => {
+                clickX = event.clientX;
+                clickY = event.clientY;
+                isDragging = false;
+            });
 
-            //Do so that scrolling by dragging doesn't open the links
-            for(let a of chart.getElementsByTagName("a")){
-                a.addEventListener("click", (event) => {
-                    if(chart.style.cursor == "move"){
-                        event.preventDefault();
-                    }
-                });
-                a.addEventListener("mousedown", () => {
-                    a.style.cursor = "move";
-                });
-                a.addEventListener("mouseup", () => {
-                    a.style.cursor = "";
-                });
-            }
-
-            //Enable zooming
-            const zoomInput = document.getElementById('zoomInput');
-            document.getElementById("zoomOut").onclick = () => changeZoom(chart, container, -2, null, 1, zoomInput);
-            document.getElementById("zoomIn").onclick = () => changeZoom(chart, container, 2, null, 1, zoomInput);
-            zoomInput.oninput = () => setZoom(chart, container, zoomInput.value / zoomInput.max * (1 - autoMinZoom(chart, container)) + autoMinZoom(chart, container), null, 1);
-            container.onwheel = (event) => zoom(event, chart, null, 1, zoomInput);
+            chart.addEventListener("mousemove", (event) => {
+                const dragX = event.clientX;
+                const dragY = event.clientY;
+                isDragging = dragX !== clickX || dragY !== clickY;
+            });
         }
     };
 
