@@ -154,6 +154,40 @@ class DecayMode{
 }
 
 /**
+ * Fixes so that it's possible to zoom with two fingers on mobile devices.
+ *
+ * @param {SvgPanZoom.Instance} panZoom The object returned by svgPanZoom().
+ * @param {SVGSVGElement} element       The <svg> element.
+ */
+function makeSvgPanZoomMobileFriendly(panZoom, element){
+    let oldPinchDistance = null;
+
+    element.addEventListener("touchmove", (event) => {
+        if(event.touches.length === 2){
+            const currentPinchDistance = Math.hypot(event.touches[0].pageX - event.touches[1].pageX, event.touches[0].pageY - event.touches[1].pageY);
+            oldPinchDistance ??= currentPinchDistance;
+
+            if(event.cancelable){
+                event.preventDefault();
+            }
+
+            //Change the zoom
+            const newScale = panZoom.getZoom() * currentPinchDistance / oldPinchDistance;
+            panZoom.zoom(newScale);
+        }
+    });
+    element.addEventListener("touchend", () => {
+        oldPinchDistance = null;
+    });
+
+    element.addEventListener("touchstart", (event) => {
+        if(event.touches.length === 2 && event.cancelable){
+            event.preventDefault();
+        }
+    });
+}
+
+/**
  * Creates the nuclide chart.
  *
  * @param {string} data The complete contents of the CSV file.
@@ -364,11 +398,12 @@ window.addEventListener("load", () => {
             downloadChart.href = "data:image/svg+xml;utf8," + encodeURIComponent(chart.outerHTML.replace("<svg ", "<svg xmlns=\"http://www.w3.org/2000/svg\" ").replace("><", "><style type=\"text/css\">" + css + "</style><"));
 
             //Set the scrolling
-            svgPanZoom(chart, {
+            const panZoom = svgPanZoom(chart, {
                 controlIconsEnabled: true,
                 minZoom: 1,
                 maxZoom: 150
             });
+            makeSvgPanZoomMobileFriendly(panZoom, chart);
 
             //Don't click on links while panning
             let clickX, clickY;
